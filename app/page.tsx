@@ -190,12 +190,123 @@ export default function Home() {
     (window as any).goSection = (key: Section) => {
     };
   }, []);
+
   useEffect(() => {
     const links = document.querySelectorAll("nav a");
     links.forEach(link => link.classList.remove("active"));
     const activeLink = document.querySelector(`nav a[data-key="${section}"]`);
     if (activeLink) activeLink.classList.add("active");
   }, [section]);
+
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    // F12
+    if (e.key === "F12") {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (
+      e.ctrlKey &&
+      e.shiftKey &&
+      ["I", "J", "C"].includes(e.key.toUpperCase())
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (e.ctrlKey && e.key.toLowerCase() === "u") {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const handleContextMenu = (e: MouseEvent) => {
+    e.preventDefault();
+  };
+
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("contextmenu", handleContextMenu);
+
+  return () => {
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("contextmenu", handleContextMenu);
+  };
+}, []);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.clear();
+    console.log(
+      "%c⚠️ COPPY CODE À ⚠️",
+      "color:red;font-size:28px;font-weight:bold"
+    );
+    console.log(
+      "%cĐỪNG CÓ CỐ GẮNG GOBI À? 😏",
+      "color:orange;font-size:16px"
+    );
+  }, 1200);
+
+  return () => clearInterval(interval);
+}, []);
+
+useEffect(() => {
+  let devToolsOpenTime: number | null = null;
+
+  const detectDevTools = () => {
+    const isOpen =
+      window.outerWidth - window.innerWidth > 160 ||
+      window.outerHeight - window.innerHeight > 160;
+
+    if (isOpen) {
+      if (!devToolsOpenTime) {
+        devToolsOpenTime = Date.now();
+      }
+
+      if (Date.now() - devToolsOpenTime > 2000) {
+        window.location.reload();
+      }
+    } else {
+      devToolsOpenTime = null;
+    }
+  };
+
+  const interval = setInterval(detectDevTools, 500);
+
+  return () => clearInterval(interval);
+}, []);
+
+
+useEffect(() => {
+  const detectDevTools = () => {
+    const isOpen =
+      window.outerWidth - window.innerWidth > 160 ||
+      window.outerHeight - window.innerHeight > 160;
+
+    if (isOpen) {
+      document.body.classList.add("devtools-open");
+
+      let warning = document.getElementById("devtools-warning");
+      if (!warning) {
+        warning = document.createElement("div");
+        warning.id = "devtools-warning";
+        warning.innerHTML = `
+          <div style="
+            font-size:32px;
+            font-weight:700;
+            margin-bottom:12px;
+          ">🚨 STOP 🚨</div>
+          <div>DevTools không dành cho bạn 😈</div>
+        `;
+        document.body.appendChild(warning);
+      }
+    }
+  };
+
+  const timer = setInterval(detectDevTools, 800);
+  return () => clearInterval(timer);
+}, []);
+
   return (
     <>
       <Head>
